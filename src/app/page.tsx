@@ -1,95 +1,134 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Box,
+  Button,
+  Heading,
+  Input,
+  Stack,
+  Text,
+  Flex
+} from "@chakra-ui/react";
+import { ErrorAlert } from "@/components/Alert";
+
+export default function HomePage() {
+  const [nome, setNome] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setErro("");
+
+    if (!nome || !senha) {
+      setErro("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // Aqui o "email" e "password" devem seguir o que sua API espera
+        body: JSON.stringify({
+          email: nome,
+          senha: senha,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Usuário ou senha inválidos.");
+      }
+
+      // Salvar token no localStorage
+      // Sucesso: salvar token e nome no localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("nomeUsuario", nome);
+      localStorage.setItem("id", data.usuario._id);
+      router.push("/central");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErro(err.message);
+      } else {
+        setErro("Erro inesperado. Tente novamente.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Flex
+      height="100vh"
+      align="center"
+      justify="center"
+      bg="white"
+    >
+      <Flex
+        w="392px"
+        h="605px"
+        p={6}
+        flexDirection="column"
+        textAlign="left"
+        boxShadow="dark-lg"
+        borderWidth="1px"
+        borderColor="gray.300"
+        rounded="md"
+        bg="white"
+      >
+        <form onSubmit={handleLogin} autoComplete="on">
+          <Stack spacing={6} p={8} maxW="sm" mx="auto">
+            <Heading size="lg" textAlign="center">
+              Login
+            </Heading>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            {erro && <ErrorAlert message={erro} />}
+
+            <Box>
+              <Text mb={2}>Nome do usuário</Text>
+              <Input
+                name="username"
+                placeholder="Digite seu nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                autoComplete="username"
+              />
+            </Box>
+
+            <Box>
+              <Text mb={2}>Senha</Text>
+              <Input
+                name="password"
+                type="password"
+                placeholder="Digite sua senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                autoComplete="current-password"
+              />
+            </Box>
+
+            <Button
+              type="submit"
+              size="lg"
+              fontWeight="bold"
+              isLoading={loading}
+              isDisabled={loading}
+            >
+              IN
+            </Button>
+          </Stack>
+        </form>
+      </Flex>
+    </Flex>
   );
 }
