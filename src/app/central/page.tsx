@@ -1,100 +1,162 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Box, Button, Flex, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
+import Navbar from "../../components/NavBar";
 import { useRouter } from "next/navigation";
-import {
-    Box,
-    Heading,
-    Text,
-    Button,
-    VStack,
-    Spinner
-} from "@chakra-ui/react";
 
-interface Perfil {
-    nome: string;
-    email: string;
-    data_registro: string;
-    role: string;
-}
+export default function MateriasPage() {
 
-export default function CentralPage() {
-    const [nomeUsuario, setNomeUsuario] = useState<string>("");
-    const [perfil, setPerfil] = useState<Perfil | null>(null);
-    const [loadingPerfil, setLoadingPerfil] = useState(false);
     const router = useRouter();
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const nome = localStorage.getItem("nomeUsuario");
-
-
-        if (!token) {
-            router.push("/"); // volta pro login se não tiver token
-            return;
-        }
-
-        setNomeUsuario(nome || "Usuário");
-    }, [router]);
-
-    async function buscarPerfil() {
-        setLoadingPerfil(true);
-        setPerfil(null);
-
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                router.push("/");
-                return;
-            }
-
-            const id = localStorage.getItem("userId");
-            const res = await fetch(`http://localhost:3001/api/users/perfil`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-            if (!res.ok) {
-                throw new Error("Erro ao buscar perfil");
-            }
-
-            const data = await res.json();
-            setPerfil(data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            console.log("Perfil carregado com sucesso" + perfil);
-            setLoadingPerfil(false);
-        }
-    }
-
     return (
-        <Box p={8} textAlign="center">
-            <Heading>Central</Heading>
-            <Text fontSize="xl" mt={4}>
-                Bem-vindo, <strong>{nomeUsuario}</strong>!
-            </Text>
+        <Flex direction='row' flexWrap='wrap'>
 
-            <Button mt={6} colorScheme="blue" onClick={buscarPerfil}>
-                Ver Perfil
-            </Button>
+            <Navbar />
 
-            {loadingPerfil && <Spinner mt={4} />}
+            <Flex direction='collum' flexWrap='wrap' margin='auto' padding='16px' width='100%' justifyContent='center' alignItems='center'>
 
-            {perfil && (
-                <VStack spacing={2} mt={6} align="start">
-                     <Text><strong>ID:</strong> {perfil._id}</Text>
-                    <Text><strong>Nome:</strong> {perfil.nome}</Text>
-                    <Text><strong>Email:</strong> {perfil.email}</Text>
-                    <Text>
-                        <strong>Data de Registro:</strong>{" "}
-                        {new Date(perfil.data_registro).toLocaleDateString("pt-BR")}
+                <Flex
+                    minW="360px"
+                    maxW="392px"
+                    w="auto"
+                    h="610px"
+                    display="flex"
+                    flexDirection="column"
+                    padding="12px"
+                    m="16px"
+                    textAlign="left"
+                    boxShadow="dark-lg"
+                    p="6"
+                    rounded="md"
+                    border="1px solid #ccc"
+                    _hover={{ bg: "blue.200", color: "white" }}
+                    transition="background-color 0.3s, color 0.3s"
+                >
+                    <Heading as="h1" size="xl" color="black">
+                        Crie
+                    </Heading>
+                    <Text color="gray.600">
+                        Cansado de ter de estudar a mesma matéria várias vezes para diferentes concursos?
                     </Text>
-                    <Text><strong>Role:</strong> {perfil.role}</Text>
-                </VStack>
-            )}
-        </Box>
+                    <Text color="gray.600">
+                        Aqui você pode criar seu próprio material, grave as anotações mais importantes.
+                    </Text>
+                    <Text color="gray.600">
+                        Aquela pegadinha que você sempre cai, aquele mnemônico que você sempre se esquece, material de resumo. Qualquer tipo de conteúdo ficará gravado para você.
+                    </Text>
+
+                    <Button bg="blue.500" mt="auto" onClick={() => router.push("/criar")}>
+                        Criar Material
+                    </Button>
+                </Flex>
+
+                <Flex
+                    minW="360px"
+                    maxW="392px"
+                    w="auto"
+                    h="610px"
+                    display="flex"
+                    flexDirection="column"
+                    padding="12px"
+                    m="16px"
+                    textAlign="left"
+                    boxShadow="dark-lg"
+                    p="6"
+                    rounded="md"
+                    border="1px solid #ccc"
+                    _hover={{ bg: "red.200", color: "white" }}
+                    transition="background-color 0.3s, color 0.3s"
+                >
+                    <Heading as="h1" size="xl" color="black">
+                        Explore
+                    </Heading>
+                    <Text color="gray.600">
+                        Cansado de ter de estudar a mesma matéria várias vezes para diferentes concursos?
+                    </Text>
+                    <Text color="gray.600">
+                        Aqui você pode criar seu próprio material, grave as anotações mais importantes.
+                    </Text>
+                    <Text color="gray.600">
+                        Aquela pegadinha que você sempre cai, aquele mnemônico que você sempre se esquece, material de resumo. Qualquer tipo de conteúdo ficará gravado para você.
+                    </Text>
+
+                    <Button bgColor="red.500" mt="auto">
+                        Compartilhe
+                    </Button>
+                </Flex>
+
+                <Flex
+                    minW="360px"
+                    maxW="392px"
+                    w="auto"
+                    h="610px"
+                    display="flex"
+                    flexDirection="column"
+                    padding="12px"
+                    m="16px"
+                    textAlign="left"
+                    boxShadow="dark-lg"
+                    p="6"
+                    rounded="md"
+                    border="1px solid #ccc"
+                    _hover={{ bg: "red.200", color: "white" }}
+                    transition="background-color 0.3s, color 0.3s"
+                >
+                    <Heading as="h1" size="xl" color="black">
+                        Explore
+                    </Heading>
+                    <Text color="gray.600">
+                        Cansado de ter de estudar a mesma matéria várias vezes para diferentes concursos?
+                    </Text>
+                    <Text color="gray.600">
+                        Aqui você pode criar seu próprio material, grave as anotações mais importantes.
+                    </Text>
+                    <Text color="gray.600">
+                        Aquela pegadinha que você sempre cai, aquele mnemônico que você sempre se esquece, material de resumo. Qualquer tipo de conteúdo ficará gravado para você.
+                    </Text>
+
+                    <Button bgColor="red.500" mt="auto">
+                        Explorar
+                    </Button>
+                </Flex>
+
+                <Flex
+                    minW="360px"
+                    maxW="392px"
+                    w="auto"
+                    h="610px"
+                    display="flex"
+                    flexDirection="column"
+                    padding="12px"
+                    m="16px"
+                    textAlign="left"
+                    boxShadow="dark-lg"
+                    p="6"
+                    rounded="md"
+                    border="1px solid #ccc"
+                    _hover={{ bg: "red.200", color: "white" }}
+                    transition="background-color 0.3s, color 0.3s"
+                >
+                    <Heading as="h1" size="xl" color="black">
+                        Explore
+                    </Heading>
+                    <Text color="gray.600">
+                        Cansado de ter de estudar a mesma matéria várias vezes para diferentes concursos?
+                    </Text>
+                    <Text color="gray.600">
+                        Aqui você pode criar seu próprio material, grave as anotações mais importantes.
+                    </Text>
+                    <Text color="gray.600">
+                        Aquela pegadinha que você sempre cai, aquele mnemônico que você sempre se esquece, material de resumo. Qualquer tipo de conteúdo ficará gravado para você.
+                    </Text>
+
+                    <Button bgColor="red.500" mt="auto">
+                        Espaço
+                    </Button>
+                </Flex>
+
+            </Flex>
+
+        </Flex>
     );
 }
